@@ -1,31 +1,24 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 const items = ref([])
+const query = ref('')
 const selectedItem = ref(null)
 const isLoading = ref(false)
 const error = ref(null)
 
 async function loadItems() {
-  try {
-    isLoading.value = true
-    const res = await fetch('https://jsonplaceholder.typicode.com/posts')
-    const data = await res.json()
-    items.value = data.slice(0, 10)
-  } catch (err) {
-    error.value = err.message
-  } finally {
-    isLoading.value = false
-  }
+  isLoading.value = true
+  const res = await fetch('https://jsonplaceholder.typicode.com/posts')
+  items.value = (await res.json()).slice(0, 20)
+  isLoading.value = false
 }
 
-function selectItem(item) {
-  selectedItem.value = item
-}
-
-function back() {
-  selectedItem.value = null
-}
+const filteredItems = computed(() => {
+  return items.value.filter(item =>
+    item.title.toLowerCase().includes(query.value.toLowerCase())
+  )
+})
 
 onMounted(loadItems)
 </script>
@@ -34,19 +27,15 @@ onMounted(loadItems)
   <div class="app">
     <h1>Каталог</h1>
 
-    <div v-if="isLoading">Завантаження...</div>
-    <div v-else-if="error">Помилка: {{ error }}</div>
+    <input v-model="query" placeholder="Пошук..." />
 
-    <div v-else-if="selectedItem">
-      <h2>{{ selectedItem.title }}</h2>
-      <p>{{ selectedItem.body }}</p>
-      <button @click="back">Назад</button>
+    <div v-if="filteredItems.length === 0">
+      Нічого не знайдено
     </div>
 
-    <ul v-else>
-      <li v-for="item in items" :key="item.id">
+    <ul>
+      <li v-for="item in filteredItems" :key="item.id">
         {{ item.title }}
-        <button @click="selectItem(item)">Деталі</button>
       </li>
     </ul>
   </div>
