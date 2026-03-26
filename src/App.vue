@@ -63,28 +63,89 @@ onMounted(loadItems)
 </script>
 
 <template>
-  <div>
+  <div class="app">
     <h1>Каталог</h1>
 
     <div v-if="isLoading">Завантаження...</div>
     <div v-else-if="error">Помилка: {{ error }}</div>
 
-    <ul v-else>
-      <li v-for="item in items" :key="item.id">
+    <ul v-else class="list">
+      <li v-for="item in items" :key="item.id" class="card">
         {{ item.title }}
       </li>
     </ul>
 
-    <div>
+    <div class="pagination">
       <button @click="prevPage" :disabled="page === 1">
-        Попередня
+        ⬅
       </button>
 
-      <span> Сторінка {{ page }} </span>
+      <span>Сторінка {{ page }}</span>
 
       <button @click="nextPage" :disabled="!hasNextPage">
-        Наступна
+        ➡
       </button>
     </div>
   </div>
 </template>
+
+<style scoped>
+.app {
+  max-width: 700px;
+  margin: auto;
+  padding: 20px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+h1 {
+  text-align: center;
+  color: #0369a1;
+  margin-bottom: 20px;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+}
+
+.card {
+  background-color: #e0f2ff;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  color: #075985;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  align-items: center;
+}
+
+button {
+  padding: 8px 14px;
+  background-color: #0284c7;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0369a1;
+}
+
+button:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
+}
+</style>
