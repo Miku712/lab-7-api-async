@@ -1,9 +1,30 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const items = ref([])
 const isLoading = ref(false)
 const error = ref(null)
+
+async function loadItems() {
+  try {
+    isLoading.value = true
+    error.value = null
+
+    const response = await fetch('https://jsonplaceholder.typicode.com/posts')
+
+    if (!response.ok) {
+      throw new Error('Помилка завантаження')
+    }
+
+    const data = await response.json()
+    items.value = data.slice(0, 10) 
+  } catch (err) {
+    error.value = err.message
+  } finally {
+    isLoading.value = false
+  }
+}
+onMounted(loadItems)
 </script>
 
 <template>
@@ -21,14 +42,3 @@ const error = ref(null)
     </ul>
   </div>
 </template>
-
-<style scoped>
-.app {
-  max-width: 700px;
-  margin: auto;
-  padding: 20px;
-}
-h1 {
-  color: #0369a1;
-}
-</style>
